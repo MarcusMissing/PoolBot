@@ -1,4 +1,4 @@
-package com.Mletzko.PoolBot;
+package com.VOD.PoolBot;
 
 public class TestClass {
 
