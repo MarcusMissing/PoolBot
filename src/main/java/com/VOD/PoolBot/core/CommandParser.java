@@ -15,8 +15,6 @@ public class CommandParser {
 		String invoke = splitBeheaded[0];
 		ArrayList<String> split = new ArrayList<>();
 		
-		System.out.println(beheaded);
-		
 		for (String s : splitBeheaded)
 			split.add(s);
 		

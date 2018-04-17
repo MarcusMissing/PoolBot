@@ -12,7 +12,7 @@ public class CmdHelloUser implements Command {
 
 	@Override
 	public void action(String[] args, MessageReceivedEvent event) {
-		event.getJDA().getTextChannels().get(0).sendMessage("Hello, " + event.getAuthor().getName()).queue();
+		event.getJDA().getTextChannelsByName("bot-commands-admin", true).get(0).sendMessage("Hello, " + event.getAuthor().getAsMention()).queue();
 		
 	}
 

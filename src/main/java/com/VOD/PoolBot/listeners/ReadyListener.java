@@ -10,13 +10,11 @@ public class ReadyListener extends ListenerAdapter{
 		String out = "\nThis Bot is running on following servers: \n";
 				
 		for (Guild g : event.getJDA().getGuilds()) {
-			out += g.getName();
+			out += g.getName() + "\n";
 		}
 		
 		System.out.println(out);
 		
-		for (Guild g : event.getJDA().getGuilds()) {
-			g.getTextChannels().get(0).sendMessage("I'm alive").queue();
-		}
+		event.getJDA().getTextChannelsByName("allgemein-chat", true).get(0).sendMessage("I'm alive").queue();
 	}
 }
