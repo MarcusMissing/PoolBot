@@ -14,6 +14,9 @@ public class ReadyListener extends ListenerAdapter{
 		}
 		
 		System.out.println(out);
+		
+		for (Guild g : event.getJDA().getGuilds()) {
+			g.getTextChannels().get(0).sendMessage("I'm alive").queue();
+		}
 	}
-	
 }

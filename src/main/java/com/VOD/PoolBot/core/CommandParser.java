@@ -7,17 +7,17 @@ import com.VOD.PoolBot.util.Constants;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CommandParser {
-	
-	
 
-	public static CommandContainer parser(String raw, MessageReceivedEvent event) {
+	public CommandContainer parser(String raw, MessageReceivedEvent event) {
 		
-		String beheaded = raw.replaceFirst(Constants.getPrefix(), "");
+		String beheaded = raw.replace(Constants.getPrefix(), "");
 		String[] splitBeheaded = beheaded.split(" ");
 		String invoke = splitBeheaded[0];
-		ArrayList<String> split = new ArrayList<String>();
+		ArrayList<String> split = new ArrayList<>();
 		
-		for (String s : split)
+		System.out.println(beheaded);
+		
+		for (String s : splitBeheaded)
 			split.add(s);
 		
 		String[] args = new String[split.size() - 1];
@@ -26,7 +26,7 @@ public class CommandParser {
 		return new CommandContainer(raw, beheaded, splitBeheaded, invoke, args, event);
 	}
 
-	public class CommandContainer {
+	public static class CommandContainer {
 
 		public final String raw;
 		public final String beheaded;

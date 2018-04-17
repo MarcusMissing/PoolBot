@@ -13,7 +13,7 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 
 public class Main {
-	
+
 	public static JDABuilder builder;
 
 	public static void main(String[] args) {
@@ -23,7 +23,7 @@ public class Main {
 		builder.setToken(Constants.getToken());
 		builder.setAutoReconnect(true);
 		builder.setStatus(OnlineStatus.ONLINE);
-		
+
 		addListener();
 		addCommands();
 
@@ -36,17 +36,15 @@ public class Main {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 	}
-	
+
 	/*
 	 * init commands
 	 */
 	public static void addCommands() {
 		CommandHandler.commands.put("hello", new CmdHelloUser());
 	}
-	
 
 	/*
 	 * init Listeners
