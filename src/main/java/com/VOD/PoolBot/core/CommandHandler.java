@@ -11,6 +11,7 @@ public class CommandHandler {
 	public static HashMap<String, Command> commands = new HashMap<>();
 	
 	public static void handleCommand(CommandParser.CommandContainer cmd) {
+		System.out.println(cmd.invoke);
 		
 		if (commands.containsKey(cmd.invoke)) {
 			
