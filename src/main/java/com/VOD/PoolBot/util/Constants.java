@@ -1,24 +1,39 @@
 package com.VOD.PoolBot.util;
 
-public class Constants {
-	
-	private static String token = "NDM1MzY4NDM5MDI1MjM4MDE2.DbaOgA.E6_OG2xmY0bju4LGKSerZTcNVDQ";
-	private static String prefix = "$";
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
-	public static String getToken() {
+public class Constants {
+
+	private static char prefix = '?'; //default prefix
+	private static String output = "bot-commands-admin";
+
+	public static String readToken() throws IOException {
+		
+		String token;
+		File file = new File("C:\\JavaDev\\PoolBot_Token.txt");
+		FileReader reader = new FileReader(file.getAbsolutePath());
+		try (BufferedReader br = new BufferedReader(reader)) {
+			token = br.readLine();
+		}
 		return token;
 	}
 
-	public static void setToken(String token) {
-		Constants.token = token;
-	}
-
-	public static String getPrefix() {
+	public static char getPrefix() {
 		return prefix;
 	}
 
-	public static void setPrefix(String prefix) {
+	public static void setPrefix(char prefix) {
 		Constants.prefix = prefix;
 	}
-	
+
+	public static String getOutput() {
+		return output;
+	}
+
+	public static void setOutput(String output) {
+		Constants.output = output;
+	}
 }

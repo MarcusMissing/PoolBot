@@ -1,6 +1,7 @@
 package com.VOD.PoolBot.listeners;
 
 import com.VOD.PoolBot.core.CommandHandler;
+import com.VOD.PoolBot.core.CommandParser;
 import com.VOD.PoolBot.core.CommandParser.CommandContainer;
 import com.VOD.PoolBot.util.Constants;
 
@@ -11,12 +12,14 @@ public class CommandListener extends ListenerAdapter {
 
 	public void onMessageReceived(MessageReceivedEvent event) {
 
-		if (event.getMessage().getContentRaw().startsWith(Constants.getPrefix())) {
+		char c = event.getMessage().getContentRaw().toCharArray()[0];
+		
+		if (c == Constants.getPrefix()) {
 			if (event.getMessage().getAuthor().getId() != event.getJDA().getSelfUser().getId()) {
 
-				CommandContainer parser = CommandHandler.parse.parser(event.getMessage().getContentRaw(), event);
+				CommandContainer parser = CommandParser.parser(event.getMessage().getContentRaw(), event);
 
-				CommandHandler.handleCommand(parser);
+				CommandHandler.handleCommand(parser, event);
 
 			}
 		}

@@ -5,7 +5,7 @@ import com.VOD.PoolBot.util.Constants;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class CmdHelloUser implements Command {
+public class CmdChangePrefix implements Command {
 
 	@Override
 	public boolean called(String[] args, MessageReceivedEvent event) {
@@ -15,8 +15,10 @@ public class CmdHelloUser implements Command {
 
 	@Override
 	public void action(CommandContainer cmd, MessageReceivedEvent event) {
+
+		Constants.setPrefix(cmd.args[0].toCharArray()[0]);
 		event.getJDA().getTextChannelsByName(Constants.getOutput(), true).get(0)
-				.sendMessage("Hello, " + event.getAuthor().getAsMention()).queue();
+				.sendMessage("Prefix was changed to " + Constants.getPrefix()).queue();
 
 	}
 
