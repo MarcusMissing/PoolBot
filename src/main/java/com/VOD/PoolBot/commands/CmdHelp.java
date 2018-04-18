@@ -1,11 +1,12 @@
 package com.VOD.PoolBot.commands;
 
+import com.VOD.PoolBot.core.CommandHandler;
 import com.VOD.PoolBot.core.CommandParser.CommandContainer;
 import com.VOD.PoolBot.util.Constants;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class CmdHelloUser implements Command {
+public class CmdHelp implements Command {
 
 	@Override
 	public boolean called(String[] args, MessageReceivedEvent event) {
@@ -15,8 +16,15 @@ public class CmdHelloUser implements Command {
 
 	@Override
 	public void action(CommandContainer cmd, MessageReceivedEvent event) {
-		event.getJDA().getTextChannelsByName(Constants.getOutput(), true).get(0)
-				.sendMessage("Hello, " + event.getAuthor().getAsMention()).queue();
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("List of commands:\n");
+
+		for (String s : CommandHandler.commands.keySet())
+			sb.append("-" + s + "\n");
+
+		event.getJDA().getTextChannelsByName(Constants.getOutput(), true).get(0).sendMessage(sb.toString()).queue();
 
 	}
 

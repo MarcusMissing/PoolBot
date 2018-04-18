@@ -5,7 +5,7 @@ import com.VOD.PoolBot.util.Constants;
 
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class CmdHelloUser implements Command {
+public class CmdOutput implements Command {
 
 	@Override
 	public boolean called(String[] args, MessageReceivedEvent event) {
@@ -15,14 +15,15 @@ public class CmdHelloUser implements Command {
 
 	@Override
 	public void action(CommandContainer cmd, MessageReceivedEvent event) {
+		Constants.setOutput(cmd.args[0]);
 		event.getJDA().getTextChannelsByName(Constants.getOutput(), true).get(0)
-				.sendMessage("Hello, " + event.getAuthor().getAsMention()).queue();
+				.sendMessage("Now I'm writing right here.").queue();
 
 	}
 
 	@Override
 	public void executed(boolean sucess, MessageReceivedEvent event) {
-		System.out.println("[INFO] Command was execuded.");
+		// TODO Auto-generated method stub
 
 	}
 
