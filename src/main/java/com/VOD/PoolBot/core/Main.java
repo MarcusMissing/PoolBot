@@ -16,6 +16,7 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.Game;
 
 public class Main {
 
@@ -33,6 +34,24 @@ public class Main {
 		}
 		builder.setAutoReconnect(true);
 		builder.setStatus(OnlineStatus.ONLINE);
+		
+		builder.setGame(new Game(null, null, null) {
+			@Override
+			public String getName() {
+				return "mit MrPool";
+			}
+			
+			@Override
+			public String getUrl() {
+				return null;
+			}
+			
+			@Override
+			public GameType getType() {
+				return GameType.DEFAULT;
+			}
+		});
+		
 
 		addListener();
 		addCommands();
@@ -46,8 +65,6 @@ public class Main {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		
-
 	}
 
 	/*
