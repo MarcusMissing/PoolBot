@@ -16,13 +16,13 @@ public class CmdHelloUser implements Command {
 	@Override
 	public void action(CommandContainer cmd, MessageReceivedEvent event) {
 		event.getJDA().getTextChannelsByName(Constants.getOutput(), true).get(0)
-				.sendMessage("Hello, " + event.getAuthor().getAsMention()).queue();
+				.sendMessage("Hello, " + event.getGuild().getMember(event.getAuthor()).getAsMention()).queue();
 
 	}
 
 	@Override
 	public void executed(boolean sucess, MessageReceivedEvent event) {
-		System.out.println("[INFO] Command was execuded.");
+		System.out.println("[INFO] Command " + this.getClass().getSimpleName() + "was execuded.");
 
 	}
 
