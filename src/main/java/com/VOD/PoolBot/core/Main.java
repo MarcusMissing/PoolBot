@@ -7,7 +7,9 @@ import javax.security.auth.login.LoginException;
 import com.VOD.PoolBot.commands.CmdChangePrefix;
 import com.VOD.PoolBot.commands.CmdHelloUser;
 import com.VOD.PoolBot.commands.CmdHelp;
+import com.VOD.PoolBot.commands.CmdMusic;
 import com.VOD.PoolBot.commands.CmdOutput;
+import com.VOD.PoolBot.commands.CmdClear;
 import com.VOD.PoolBot.listeners.CommandListener;
 import com.VOD.PoolBot.listeners.ReadyListener;
 import com.VOD.PoolBot.util.Constants;
@@ -27,7 +29,7 @@ public class Main {
 		builder = new JDABuilder(AccountType.BOT);
 
 		try {
-			builder.setToken(Constants.readToken());
+			builder.setToken(Constants.readToken(args));
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -38,7 +40,7 @@ public class Main {
 		builder.setGame(new Game(null, null, null) {
 			@Override
 			public String getName() {
-				return "mit MrPool";
+				return "Vexual Offended";
 			}
 			
 			@Override
@@ -48,7 +50,7 @@ public class Main {
 			
 			@Override
 			public GameType getType() {
-				return GameType.DEFAULT;
+				return GameType.WATCHING;
 			}
 		});
 		
@@ -75,6 +77,8 @@ public class Main {
 		CommandHandler.commands.put("prefix", new CmdChangePrefix());
 		CommandHandler.commands.put("help", new CmdHelp());
 		CommandHandler.commands.put("output", new CmdOutput());
+		CommandHandler.commands.put("clear", new CmdClear());
+		CommandHandler.commands.put("music", new CmdMusic());
 	}
 
 	/*

@@ -10,10 +10,10 @@ public class Constants {
 	private static char prefix = '?'; //default prefix
 	private static String output = "bot-commands-admin";
 
-	public static String readToken() throws IOException {
+	public static String readToken(String[] args) throws IOException {
 		
 		String token;
-		File file = new File("C:\\JavaDev\\PoolBot_Token.txt");
+		File file = new File(args[0]);
 		FileReader reader = new FileReader(file.getAbsolutePath());
 		try (BufferedReader br = new BufferedReader(reader)) {
 			token = br.readLine();

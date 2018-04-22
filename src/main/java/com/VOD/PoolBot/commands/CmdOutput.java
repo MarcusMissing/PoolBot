@@ -1,12 +1,17 @@
 package com.VOD.PoolBot.commands;
 
+import java.awt.Color;
+
 import com.VOD.PoolBot.core.Permissions;
 import com.VOD.PoolBot.core.CommandParser.CommandContainer;
 import com.VOD.PoolBot.util.Constants;
 
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class CmdOutput implements Command {
+
+	EmbedBuilder error = new EmbedBuilder().setColor(Color.RED);
 
 	@Override
 	public boolean called(String[] args, MessageReceivedEvent event) {
@@ -28,15 +33,11 @@ public class CmdOutput implements Command {
 						.sendMessage("Now I'm writing right here.").queue();
 			}
 
-		} else {
-			event.getJDA().getTextChannelsByName(Constants.getOutput(), true).get(0)
-					.sendMessage("You don't have the permission to do that.").queue();
 		}
 	}
 
 	@Override
 	public void executed(boolean sucess, MessageReceivedEvent event) {
-		System.out.println("[INFO] Command " + this.getClass().getSimpleName() + "was execuded.");
 
 	}
 

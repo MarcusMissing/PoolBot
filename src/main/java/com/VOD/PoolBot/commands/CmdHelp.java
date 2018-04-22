@@ -30,7 +30,6 @@ public class CmdHelp implements Command {
 
 	@Override
 	public void executed(boolean sucess, MessageReceivedEvent event) {
-		System.out.println("[INFO] Command " + this.getClass().getSimpleName() + "was execuded.");
 
 	}
 
