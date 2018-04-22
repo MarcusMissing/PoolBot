@@ -1,4 +1,4 @@
-package audioCore;
+package com.VOD.PoolBot.audioCore;
 
 import java.util.ArrayList;
 import java.util.Collections;

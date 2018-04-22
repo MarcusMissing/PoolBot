@@ -1,4 +1,4 @@
-package audioCore;
+package com.VOD.PoolBot.audioCore;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
