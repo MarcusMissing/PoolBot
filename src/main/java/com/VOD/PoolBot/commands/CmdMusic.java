@@ -1,44 +1,43 @@
 package com.VOD.PoolBot.commands;
 
-import java.awt.Color;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.VOD.PoolBot.audioCore.AudioInfo;
+import com.VOD.PoolBot.audioCore.PlayerSendHandler;
+import com.VOD.PoolBot.audioCore.TrackManager;
 
 import com.VOD.PoolBot.core.CommandParser.CommandContainer;
-import com.sedmelluq.discord.lavaplayer.player.*;
+import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-
-import audioCore.AudioInfo;
-import audioCore.PlayerSendHandler;
-import audioCore.TrackManager;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
+import java.awt.Color;
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class CmdMusic implements Command {
 
-	private static final int playlistLimit = 100;
+	private static final int playlistLimit = 500;
 	private static Guild guild;
 	private static final AudioPlayerManager manager = new DefaultAudioPlayerManager();
 	private static final Map<Guild, Map.Entry<AudioPlayer, TrackManager>> players = new HashMap<>();
 
+	
 	public void Music() {
 		AudioSourceManagers.registerRemoteSources(manager);
 	}
 
+	
 	private AudioPlayer createPlayer(Guild g) {
-
 		AudioPlayer p = manager.createPlayer();
 		TrackManager m = new TrackManager(p);
 		p.addListener(m);
@@ -50,10 +49,12 @@ public class CmdMusic implements Command {
 		return p;
 	}
 
+	
 	private boolean hasPlayer(Guild g) {
 		return players.containsKey(g);
 	}
 
+	
 	private AudioPlayer getPlayer(Guild g) {
 		if (hasPlayer(g))
 			return players.get(g).getKey();
@@ -61,55 +62,70 @@ public class CmdMusic implements Command {
 			return createPlayer(g);
 	}
 
+	
 	private TrackManager getManager(Guild g) {
 		return players.get(g).getValue();
 	}
 
+	
 	private boolean isIdle(Guild g) {
 		return !hasPlayer(g) || getPlayer(g).getPlayingTrack() == null;
 	}
 
+	
 	private void loadTrack(String identifier, Member author, Message msg) {
 
 		Guild guild = author.getGuild();
 		getPlayer(guild);
 
-		manager.setFrameBufferDuration(1000);
+		manager.setFrameBufferDuration(5000);
+		
 		manager.loadItemOrdered(guild, identifier, new AudioLoadResultHandler() {
-
+			
 			@Override
 			public void trackLoaded(AudioTrack track) {
+				System.out.println(track);
 				getManager(guild).queue(track, author);
-
+				
 			}
 
 			@Override
 			public void playlistLoaded(AudioPlaylist playlist) {
-				for (int i = 0; i < (playlist.getTracks().size() > playlistLimit ? playlistLimit
-						: playlist.getTracks().size()); i++) {
-					getManager(guild).queue(playlist.getTracks().get(i), author);
-				}
+				System.out.println("test");
+				if (playlist.getSelectedTrack() != null) {
+					trackLoaded(playlist.getSelectedTrack());
+				} else if (playlist.isSearchResult()) {
+					trackLoaded(playlist.getTracks().get(0));
+				} else {
 
+					for (int i = 0; i < Math.min(playlist.getTracks().size(), playlistLimit); i++) {
+						getManager(guild).queue(playlist.getTracks().get(i), author);
+					}
+				}
+				
 			}
 
 			@Override
 			public void noMatches() {
 				// TODO Auto-generated method stub
-
+				
 			}
 
 			@Override
-			public void loadFailed(FriendlyException arg0) {
+			public void loadFailed(FriendlyException exception) {
 				// TODO Auto-generated method stub
-
+				
 			}
+			
 		});
 	}
 
+	
 	private void skip(Guild g) {
 		getPlayer(g).stopTrack();
 	}
 
+	
 	private String getTimestamp(long milis) {
 		long seconds = milis / 1000;
 		long hours = Math.floorDiv(seconds, 3600);
@@ -119,6 +135,7 @@ public class CmdMusic implements Command {
 		return (hours == 0 ? "" : hours + ":") + String.format("%02d", mins) + ":" + String.format("%02d", seconds);
 	}
 
+	
 	private String buildQueueMessage(AudioInfo info) {
 		AudioTrackInfo trackInfo = info.getTrack().getInfo();
 		String title = trackInfo.title;
@@ -126,15 +143,10 @@ public class CmdMusic implements Command {
 		return "`[ " + getTimestamp(length) + " ]` " + title + "\n";
 	}
 
+	
 	private void sendErrorMsg(MessageReceivedEvent event, String content) {
-		event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription(content).build())
+		event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.red).setDescription(content).build())
 				.queue();
-	}
-
-	@Override
-	public boolean called(String[] args, MessageReceivedEvent event) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override
@@ -146,7 +158,7 @@ public class CmdMusic implements Command {
 			sendErrorMsg(event, help());
 			return;
 		}
-		
+
 		MusicCommands mCommand = MusicCommands.valueOf(cmd.args[0].toUpperCase());
 
 		switch (mCommand) {
@@ -158,6 +170,9 @@ public class CmdMusic implements Command {
 				sendErrorMsg(event, "Please enter valid source!");
 				return;
 			}
+			
+//			event.getMessage().getMember().getGuild().getAudioManager().openAudioConnection(event.getMember().getVoiceState().getChannel());
+//			event.getMessage().getMember().getGuild().getAudioManager().closeAudioConnection();
 			
 			String input = Arrays.stream(cmd.args).skip(1).map(s -> " " + s).collect(Collectors.joining()).substring(1);
 
@@ -227,72 +242,70 @@ public class CmdMusic implements Command {
 
 			try {
 				int sideNumb = cmd.args.length > 1 ? Integer.parseInt(cmd.args[1]) : 1;
-				
+
 				List<String> tracks = new ArrayList<>();
 				List<String> trackSublist;
-				
+
 				getManager(guild).getQueue().forEach(AudioInfo -> tracks.add(buildQueueMessage(AudioInfo)));
-				
+
 				if (tracks.size() > 20)
 					trackSublist = tracks.subList((sideNumb - 1) * 20, (sideNumb - 1) * 20 + 20);
 				else
 					trackSublist = tracks;
-				
+
 				String out = trackSublist.stream().collect(Collectors.joining("\n"));
 				int sideNumbAll = tracks.size() >= 20 ? tracks.size() / 20 : 1;
-				
-				event.getTextChannel().sendMessage(
-						new EmbedBuilder()
-							.setDescription("**CURRENT QUEUE:**\n" + 
-									"*[" + getManager(guild).getQueue().size() + " Tracks | Side " + sideNumb + " / " + sideNumbAll + "]*\n\n" +
-									out
-						).build()
-				).queue();
-				
-				
+
+				event.getTextChannel()
+						.sendMessage(new EmbedBuilder()
+								.setDescription("**CURRENT QUEUE:**\n" + "*[" + getManager(guild).getQueue().size()
+										+ " Tracks | Side " + sideNumb + " / " + sideNumbAll + "]*\n\n" + out)
+								.build())
+						.queue();
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				sendErrorMsg(event, "Enter a valid number!");
 			}
-			
-			
+
 			break;
 
 		case PAUSE:
-        case RESUME:
-            if (getPlayer(guild).isPaused()) {
-                getPlayer(guild).setPaused(false);
-                event.getTextChannel().sendMessage(
-                        "Player resumed."
-                ).queue();
-            } else {
-                getPlayer(guild).setPaused(true);
-                event.getTextChannel().sendMessage(
-                        "Player paused."
-                ).queue();
-            }
-            break;
-            
-        case HELP:
-        case H:
-        	sendErrorMsg(event, help());
-        	break;
-            
-        default:
-        	sendErrorMsg(event, help());
-        	
+		case RESUME:
+			if (getPlayer(guild).isPaused()) {
+				getPlayer(guild).setPaused(false);
+				event.getTextChannel().sendMessage("Player resumed.").queue();
+			} else {
+				getPlayer(guild).setPaused(true);
+				event.getTextChannel().sendMessage("Player paused.").queue();
+			}
+			break;
+
+		case HELP:
+		case H:
+			sendErrorMsg(event, help());
+			break;
+
+		default:
+			sendErrorMsg(event, help());
+
 		}
+	}
+
+	@Override
+	public boolean called(String[] args, MessageReceivedEvent event) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
 	public void executed(boolean sucess, MessageReceivedEvent event) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public String help() {
 		return "Help will follow :joy:";
 	}
-
 }

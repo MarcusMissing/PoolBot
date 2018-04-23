@@ -19,64 +19,74 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 
 public class TrackManager extends AudioEventAdapter {
 
-	private final AudioPlayer player;
-	private final Queue<AudioInfo> queue;
+    private final AudioPlayer player;
+    private final Queue<AudioInfo> queue;
 
-	public TrackManager(AudioPlayer player) {
-		this.player = player;
-		this.queue = new LinkedBlockingQueue<>();
-	}
 
-	public void queue(AudioTrack track, Member author) {
-		AudioInfo info = new AudioInfo(track, author);
-		queue.add(info);
+    public TrackManager(AudioPlayer player) {
+        this.player = player;
+        this.queue = new LinkedBlockingQueue<>();
+    }
 
-		if (player.getPlayingTrack() == null)
-			player.playTrack(track);
-	}
+    
+    public void queue(AudioTrack track, Member author) {
+        AudioInfo info = new AudioInfo(track, author);
+        queue.add(info);
 
-	public Set<AudioInfo> getQueue() {
-		return new LinkedHashSet<>(queue);
-	}
+        if (player.getPlayingTrack() == null) {
+            player.playTrack(track);
+        }
+    }
 
-	public AudioInfo getInfo(AudioTrack track) {
-		return queue.stream().filter(info -> info.getTrack().equals(track)).findFirst().orElse(null);
-	}
+    
+    public Set<AudioInfo> getQueue() {
+        return new LinkedHashSet<>(queue);
+    }
 
-	public void purgeQueue() {
-		queue.clear();
-	}
+    
+    public AudioInfo getInfo(AudioTrack track) {
+        return queue.stream()
+                .filter(info -> info.getTrack().equals(track))
+                .findFirst().orElse(null);
+    }
 
-	public void shuffleQueue() {
-		List<AudioInfo> cQueue = new ArrayList<>(getQueue());
-		AudioInfo current = cQueue.get(0);
-		cQueue.remove(0);
-		Collections.shuffle(cQueue);
-		cQueue.add(0, current);
-		purgeQueue();
-		queue.addAll(cQueue);
-	}
+    
+    public void purgeQueue() {
+        queue.clear();
+    }
 
-	@Override
-	public void onTrackStart(AudioPlayer player, AudioTrack track) {
-		AudioInfo info = queue.element();
-		VoiceChannel vChan = info.getAuthor().getVoiceState().getChannel();
+    
+    public void shuffleQueue() {
+        List<AudioInfo> cQueue = new ArrayList<>(getQueue());
+        AudioInfo current = cQueue.get(0);
+        cQueue.remove(0);
+        Collections.shuffle(cQueue);
+        cQueue.add(0, current);
+        purgeQueue();
+        queue.addAll(cQueue);
+    }
 
-		if (vChan == null)
-			player.stopTrack();
-		else
-			info.getAuthor().getGuild().getAudioManager().openAudioConnection(vChan);
-	}
+    
+    @Override
+    public void onTrackStart(AudioPlayer player, AudioTrack track) {
+        AudioInfo info = queue.element();
+        VoiceChannel vChan = info.getAuthor().getVoiceState().getChannel();
 
-	@Override
-	public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        if (vChan == null)
+            player.stopTrack();
+        else
+            info.getAuthor().getGuild().getAudioManager().openAudioConnection(vChan);
+    }
 
-		Guild g = queue.poll().getAuthor().getGuild();
-		
-		if (queue.isEmpty()) 
-			g.getAudioManager().closeAudioConnection();
-		else
-			player.playTrack(queue.element().getTrack());
-		
-	}
+    
+    @Override
+    public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
+        Guild g = queue.poll().getAuthor().getGuild();
+
+        if (queue.isEmpty())
+            g.getAudioManager().closeAudioConnection();
+        else
+            player.playTrack(queue.element().getTrack());
+    }
+
 }
