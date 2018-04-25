@@ -76,48 +76,42 @@ public class CmdMusic implements Command {
 	private void loadTrack(String identifier, Member author, Message msg) {
 
 		Guild guild = author.getGuild();
-		getPlayer(guild);
-
+		
 		manager.setFrameBufferDuration(5000);
 		
 		manager.loadItemOrdered(guild, identifier, new AudioLoadResultHandler() {
 			
 			@Override
 			public void trackLoaded(AudioTrack track) {
-				System.out.println(track);
 				getManager(guild).queue(track, author);
-				
 			}
 
 			@Override
 			public void playlistLoaded(AudioPlaylist playlist) {
-				System.out.println("test");
 				if (playlist.getSelectedTrack() != null) {
 					trackLoaded(playlist.getSelectedTrack());
 				} else if (playlist.isSearchResult()) {
 					trackLoaded(playlist.getTracks().get(0));
 				} else {
-
 					for (int i = 0; i < Math.min(playlist.getTracks().size(), playlistLimit); i++) {
 						getManager(guild).queue(playlist.getTracks().get(i), author);
 					}
 				}
-				
 			}
 
 			@Override
 			public void noMatches() {
-				// TODO Auto-generated method stub
-				
+				System.out.println("Cannot find track!");
+				System.out.println(identifier);
 			}
 
 			@Override
 			public void loadFailed(FriendlyException exception) {
-				// TODO Auto-generated method stub
-				
+				System.out.println("Failed loading Song!");
 			}
 			
 		});
+		msg.delete().queue();
 	}
 
 	
@@ -171,13 +165,10 @@ public class CmdMusic implements Command {
 				return;
 			}
 			
-//			event.getMessage().getMember().getGuild().getAudioManager().openAudioConnection(event.getMember().getVoiceState().getChannel());
-//			event.getMessage().getMember().getGuild().getAudioManager().closeAudioConnection();
-			
 			String input = Arrays.stream(cmd.args).skip(1).map(s -> " " + s).collect(Collectors.joining()).substring(1);
 
-			if (!(input.startsWith("http://") || input.startsWith("https://")))
-				input = "ytsearch: " + input;
+//			if (!(input.startsWith("http://") || input.startsWith("https://")))
+//				input = "ytsearch: " + input;
 
 			loadTrack(input, event.getMember(), event.getMessage());
 
